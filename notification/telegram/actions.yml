@@ -1,0 +1,33 @@
+name: "Telegram Bot Notification"
+description: "Send a message to a telegram chat via a bot"
+inputs:
+  bot-token:
+    description: "Telegram bot token"
+    required: true
+  chat-id:
+    description: "Telegram chat id"
+    required: true
+  message:
+    description: "Message to be sent"
+  parse-mode:
+    description: "Telegram parse mode (Markdown, MarkdownV2, HTML, or none)"
+    required: false
+    default: "none"
+  disable-notification:
+    description: "Send silently"
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Send Telegram message
+      shell: bash
+      run: |
+        curl -sS --fail \
+          -X POST "https://api.telegram.org/bot${{ inputs.bot-token }}/sendMessage" \
+          -d chat_id="${{ inputs.chat-id }}" \
+          -d text="${{ inputs.message }}" \
+          -d parse_mode="${{ inputs.parse-mode }}" \
+          -d disable_notification="${{ inputs.disable-notification }}" \
+          --fail-with-body
