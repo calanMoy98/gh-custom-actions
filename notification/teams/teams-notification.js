@@ -19,11 +19,15 @@ async function webhookCall(webhookUrl, adaptiveCardPayload) {
 
 async function run() {
   try {
-    const webhookUrl = core.getInput("webhook-url", { required: true });
-    const title = core.getInput("title");
-    const message = core.getInput("message", { required: true });
-    const status = core.getInput("status");
-    const color = core.getInput("color");
+    const webhookUrl = core.getInput("ms-teams-webhook-url", {
+      required: true,
+    });
+    const title = core.getInput("ms-teams-webhook-title");
+    const message = core.getInput("ms-teams-webhook-message", {
+      required: true,
+    });
+    const status = core.getInput("ms-teams-webhook-status");
+    const color = core.getInput("ms-teams-webhook-color");
 
     const adaptiveCardPayload = {
       type: "message",
