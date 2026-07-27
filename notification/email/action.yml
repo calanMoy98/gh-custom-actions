@@ -1,0 +1,7 @@
+name: "Email Notification"
+description: "Send an email notification"
+inputs:
+
+runs:
+  using: "node25"
+  main: "dist/index.js"
