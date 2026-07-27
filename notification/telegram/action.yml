@@ -24,7 +24,7 @@ runs:
     - name: Send Telegram message
       shell: bash
       run: |
-        curl -sS --fail \
+        curl -sS \
           -X POST "https://api.telegram.org/bot${{ inputs.bot-token }}/sendMessage" \
           -d chat_id="${{ inputs.chat-id }}" \
           -d text="${{ inputs.message }}" \
