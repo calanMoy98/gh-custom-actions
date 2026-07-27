@@ -1,0 +1,34 @@
+name: "Microsoft Teams Notification"
+description: "Send a message to a Microsoft Teams chat"
+author: "Calan Moy"
+inputs:
+  ms-teams-webhook-url:
+    description: "Microsoft Teams Webhook URL"
+    required: true
+  ms-teams-webhook-title:
+    description: "Microsoft Teams Webhook Title text for the Adaptive Card"
+    required: false
+    default: "GitHub Actions Notification"
+  ms-teams-webhook-message:
+    description: "Main message body"
+    required: true
+  ms-teams-webhook-status:
+    description: "Microsoft Teams Webhook Status to display (success, failure, etc.)"
+    required: false
+    default: "info"
+  ms-teams-webhook-color:
+    description: "Microsoft Teams Webhook Accent color hex (without #)"
+    required: false
+    default: "0078D4"
+
+outputs:
+  response-status:
+    description: "HTTP status code returned by the Teams webhook"
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
+
+branding:
+  icon: "message-square"
+  color: "blue"
