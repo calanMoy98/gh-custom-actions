@@ -27557,13 +27557,34 @@ module.exports = parseParams
 var __webpack_exports__ = {};
 const core = __nccwpck_require__(7484);
 
+async function webhookCall(webhookUrl, adaptiveCardPayload) {
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(adaptiveCardPayload),
+  });
+
+  core.setOutput("response-status", String(response.status));
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Teams webhook failed: ${response.status} ${text}`);
+  }
+
+  core.info("Message sent to Teams successfully.");
+}
+
 async function run() {
   try {
-    const webhookUrl = core.getInput("webhook-url", { required: true });
-    const title = core.getInput("title");
-    const message = core.getInput("message", { required: true });
-    const status = core.getInput("status");
-    const color = core.getInput("color");
+    const webhookUrl = core.getInput("ms-teams-webhook-url", {
+      required: true,
+    });
+    const title = core.getInput("ms-teams-webhook-title");
+    const message = core.getInput("ms-teams-webhook-message", {
+      required: true,
+    });
+    const status = core.getInput("ms-teams-webhook-status");
+    const color = core.getInput("ms-teams-webhook-color");
 
     const adaptiveCardPayload = {
       type: "message",
@@ -27638,30 +27659,6 @@ async function run() {
 }
 
 run();
-
-const WEBHOOK_URL = process.env.TEAMS_WEBHOOK_URL;
-
-if (!webhookUrl) {
-  console.error("Missing TEAMS_WEBHOOK_URL environment variable");
-  process.exit(1);
-}
-
-async function webhookCall(webhookUrl, adaptiveCardPayload) {
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(adaptiveCardPayload),
-  });
-
-  core.setOutput("response-status", String(response.status));
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Teams webhook failed: ${response.status} ${text}`);
-  }
-
-  core.info("Message sent to Teams successfully.");
-}
 
 module.exports = __webpack_exports__;
 /******/ })()
