@@ -26,7 +26,7 @@ outputs:
     description: "HTTP status code returned by the Teams webhook"
 
 runs:
-  using: "node20"
+  using: "node25"
   main: "dist/index.js"
 
 branding:
