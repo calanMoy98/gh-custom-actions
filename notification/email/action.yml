@@ -3,5 +3,5 @@ description: "Send an email notification"
 inputs:
 
 runs:
-  using: "node25"
+  using: "node24"
   main: "dist/index.js"
