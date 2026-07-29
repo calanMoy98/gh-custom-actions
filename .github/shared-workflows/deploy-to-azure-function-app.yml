@@ -1,0 +1,89 @@
+name: Reusable Deployment Workflow to Azure App Service
+description: This workflow is used for deploying Java Applications to Azure Functions a
+
+on:
+  workflow_call:
+    #used to define inputs or secrets passed from a caller
+    inputs:
+      function-package-path:
+        description: "Path to the built function package (target/azure-functions/<app-name>)"
+        required: true
+        type: string
+      pom-xml-directory:
+        description: "Directory containing pom.xml, relative to repo root"
+        required: false
+        type: string
+        default: "."
+      java-version:
+        description: "JDK version to use"
+        required: false
+        type: string
+        default: "25"
+      environment-name:
+        description: "GitHub environment to deploy against (e.g. development)"
+        required: false
+        type: string
+        default: "development"
+      sku:
+        description: "Azure Functions hosting SKU"
+        required: false
+        type: string
+        default: "flexconsumption"
+    secrets:
+      AZURE_FUNCTIONAPP_NAME:
+        description: "Name of the Azure Function App to deploy to"
+        required: true
+        type: string
+      AZURE_FUNCTIONAPP_PUBLISH_PROFILE:
+        required: true
+    outputs:
+      function-package-path:
+        description: "Path to the deployed function package"
+        value: ${{ jobs.deploy.outputs.function-package-path }}
+
+# make sure the caller workflow also grants it at the top level, since a called workflow can't claim permissions the caller doesn't allow
+permissions:
+  contents: read #allows github actions to clone the repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment-name }}
+    outputs:
+      function-package-path: ${{ inputs.function-package-path }}
+    steps:
+      - name: "Checkout code from Github"
+        uses: actions/checkout@v6
+
+      - name: "Setup Java Sdk ${{ inputs.java-version }}"
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ input.java-version }}
+          distribution: "microsoft"
+          cache: maven
+
+      - name: "Restore Project Dependencies Using Mvn"
+        shell: bash
+        run: |
+          pushd './${{ inputs.pom-xml-directory }}'
+          mvn clean package
+          popd
+
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --update-snapshots verify
+
+      - name: Upload function package
+        uses: actions/upload-artifact@v4
+        with:
+          name: function-app
+          path: ${{ inputs.function-package-path }}
+
+      - name: "Run Azure Functions Action"
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ inputs.function-package-path }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          respect-pom-xml: true
+          sku: ${{ inputs.sku }}
+          remote-build: false
