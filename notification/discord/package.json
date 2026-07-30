@@ -3,11 +3,12 @@
   "description": "Reusable Github Custom Discord Bot Webhook Notification Module",
   "authors": "Calan Moy",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "start": "node index.js"
   },
   "dependencies": {
     "@actions/core": "^1.10.1",
