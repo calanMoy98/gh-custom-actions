@@ -1,5 +1,6 @@
 name: "Telegram Bot Notification"
 description: "Send a message to a telegram chat via a bot"
+author: "Calan Moy"
 inputs:
   bot-token:
     description: "Telegram bot token"
