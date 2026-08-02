@@ -1,8 +1,9 @@
-import { Events, MessageFlags } from "discord.js";
+import { Events, MessageFlags, Collection } from "discord.js";
+import cooldowns from "./cooldown.js";
 
 export default {
   name: Events.InteractionCreate,
-  execute: async (client) => {
+  execute: async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     const command = interaction.client.commands.get(interaction.commandName);
@@ -13,6 +14,8 @@ export default {
       );
       return;
     }
+
+    if (cooldowns(interaction, command)) return;
 
     try {
       await command.execute(interaction);
